@@ -1,39 +1,18 @@
-# Chirpy Starter
+# Cryptographic Audits
 
-[![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;
-[![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
-A minimal, ready-to-use template for creating a blog with the [**Chirpy**][chirpy] Jekyll theme. Get up and running in minutes with all critical files pre-configured.
+Source for [cryptographic-audits.github.io](https://cryptographic-audits.github.io), an independent collection of version-specific cryptographic corrections, counterexamples, and reproducible checks.
 
-## Why This Starter Exists
+## Current audits
 
-When installing Chirpy through [RubyGems.org][gem], Jekyll can only read a subset of theme files (`_data`, `_layouts`, `_includes`, `_sass`, `assets`) and limited `_config.yml` options from the gem. As a result, users cannot enjoy the full out-of-the-box experience that Chirpy offers.
+- Mathematical Errors and Counterexamples in ProtoStar (ePrint 2023/620)
+- Technical Concerns on FLIP-and-Prove R1CS (ePrint 2024/1364)
 
-To unlock all features, the following files must be present in your Jekyll site:
+The site uses the [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) Jekyll theme and is deployed through GitHub Pages.
 
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
-```
+## Scope
 
-This starter bundles those files from the latest **Chirpy** release along with a [CD][CD] workflow, so you can start writing immediately.
+Articles evaluate the cited manuscript versions as written. Corrections, later revisions, and independent reproductions are welcome through the repository's issue tracker or pull requests.
 
-## Usage
-
-Check out the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy/wiki).
-
-## Contributing
-
-This repository is automatically updated with new releases from the theme repository. If you encounter any issues or want to contribute to its improvement, please visit the [theme repository][chirpy] to provide feedback.
-
-## License
-
-This work is published under [MIT][mit] License.
-
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+Original editorial content and technical reports are licensed under [CC BY 4.0](CONTENT_LICENSE.md). Theme and code components retain their respective software licenses.
