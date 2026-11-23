@@ -2,6 +2,8 @@
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
+![Cryptographic Audits](assets/img/home/cryptographic-audits-hero.png)
+
 Source for [cryptographic-audits.github.io](https://cryptographic-audits.github.io), an independent collection of version-specific cryptographic corrections, counterexamples, and reproducible checks.
 
 ## Current audits

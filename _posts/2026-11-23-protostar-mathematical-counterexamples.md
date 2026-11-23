@@ -33,22 +33,26 @@ We give explicit counterexamples involving two valid source proofs whose folded 
 
 ### 1.1 The original constraint
 
-Step 8 of protocol Π_mplkup on page 42 checks:
+**Degree calculation.** Step 8 of protocol $\Pi_{\mathsf{mplkup}}$ on page 42 checks
 
-`Σⱼ bⱼ · hᵢ · (wⱼ,Lⱼ[i] + r) = 1`
+$$
+h_i \sum_j b_j\bigl(w_{j,L_j}[i]+r\bigr)=1,
+$$
 
-where:
+where
 
 - `bⱼ` is the circuit-selection variable.
 - `hᵢ` is the lookup inverse variable.
 - `wⱼ,Lⱼ[i]` is the witness value in branch j.
 - `r` is the lookup challenge.
 
-Expanding the expression produces the monomial:
+Expanding the left-hand side produces the monomial
 
-`bⱼ · hᵢ · wⱼ,Lⱼ[i]`
+$$
+b_j h_i w_{j,L_j}[i],
+$$
 
-Its total algebraic degree is **3**.
+whose total algebraic degree is **3**.
 
 Although b is a one-hot vector in an ordinary valid proof, it is not a fixed selector during accumulation.
 
@@ -67,9 +71,11 @@ The proposed high-low-degree accumulation therefore uses:
 
 Appendix A, pages 49–50, describes this single-vector approach for degree-2 verification equations.
 
-A degree-3 constraint generally requires two intermediate cross-error coefficients:
+A degree-3 constraint generally requires two intermediate cross-error coefficients,
 
-`e₁X + e₂X²`
+$$
+E(X)=e_1X+e_2X^2.
+$$
 
 The circuit-selected lookup constraint does not satisfy the degree assumption of the low-degree accumulation component.
 
@@ -77,15 +83,17 @@ This is a mismatch between the actual verification polynomial and the accumulati
 
 ## 2. Explicit Counterexample: Two Valid Proofs Produce an Invalid Fold
 
-We construct two completely valid source proofs and show that the stated low-degree folding procedure rejects their combination.
+**Proof.** We construct two valid source proofs and show that the stated low-degree folding procedure rejects their combination.
 
 ### 2.1 Configuration
 
 Work over a prime field 𝔽ₚ with characteristic greater than 3.
 
-Use two branch circuits and a fixed lookup table:
+Use two branch circuits and the fixed lookup table
 
-`t = (1, 2)`
+$$
+\mathbf t=(1,2).
+$$
 
 Each branch performs one lookup.
 
@@ -106,15 +114,14 @@ We focus on the coordinates relevant to the lookup constraint.
 | Table inverse g           | (1/2, 0) | (0, 1/3) |
 | Relaxation parameter μ    | 1        | 1        |
 
-Both source proofs satisfy the original lookup constraints.
+**Endpoint validity.** Both source proofs satisfy the original lookup constraint:
 
-For proof A:
-
-`(1/2) · (1 + 1) = 1`
-
-For proof B:
-
-`(1/3) · (2 + 1) = 1`
+$$
+\begin{aligned}
+\text{Proof A:}\quad &\frac12(1+1)=1,\\
+\text{Proof B:}\quad &\frac13(2+1)=1.
+\end{aligned}
+$$
 
 The table-side inverse equations and sum equality also hold.
 
@@ -124,39 +131,40 @@ Thus, A is a valid old accumulator and B is a valid new proof for the accumulati
 
 ### 2.3 Folding the two proofs
 
-Introduce a formal folding variable X and form:
+**Folding.** Introduce a formal folding variable $X$ and form $A+XB$. The folded coordinates are
 
-`A + XB`
+$$
+\begin{aligned}
+\mu(X)&=1+X, & \mathbf b(X)&=(1,X),\\
+\mathbf w(X)&=(1,2X), & r(X)&=1+X,\\
+h(X)&=\frac12+\frac{X}{3}. &&
+\end{aligned}
+$$
 
-The folded coordinates are:
+The correctly homogenized degree-3 lookup residual is
 
-`μ(X) = 1 + X`
+$$
+F(X)=h(X)\sum_j b_j(X)\bigl(w_j(X)+r(X)\bigr)-\mu(X)^3.
+$$
 
-`b(X) = (1, X)`
+Substituting the folded coordinates and collecting coefficients gives
 
-`w(X) = (1, 2X)`
+$$
+\begin{aligned}
+F(X)
+&=\left(\frac12+\frac{X}{3}\right)
+  \left(2+2X+3X^2\right)-(1+X)^3\\
+&=-\frac43X-\frac56X^2.
+\end{aligned}
+$$
 
-`r(X) = 1 + X`
+Hence
 
-`h(X) = 1/2 + X/3`
-
-The correctly homogenized degree-3 lookup constraint is:
-
-`F(X) = h(X) · Σⱼ bⱼ(X)(wⱼ(X) + r(X)) − μ(X)³`
-
-Substituting the folded coordinates gives:
-
-`F(X) = (1/2 + X/3)(2 + 2X + 3X²) − (1 + X)³`
-
-Expanding:
-
-`F(X) = −(4/3)X − (5/6)X²`
-
-Therefore:
-
-`e₁ = −4/3`
-
-`e₂ = −5/6 ≠ 0`
+$$
+e_1=-\frac43,
+\qquad
+e_2=-\frac56\ne 0.
+$$
 
 The constant coefficient is zero because A is valid.
 
@@ -168,37 +176,39 @@ This is precisely the coefficient omitted when a degree-3 lookup constraint is h
 
 ### 2.4 Failure of the single-cross-error construction
 
-Under the low-degree error allocation described on page 44, only the first cross-error coefficient is retained:
-
-`e₁ = −4/3`
+**Decider failure.** Under the low-degree error allocation described on page 44, only the first cross-error coefficient $e_1=-4/3$ is retained.
 
 After sampling the folding challenge α, the decider must compare the actual folded verification error with the accumulated error.
 
-Their difference is:
+Their difference is
 
-`F(α) − αe₁ = −(5/6)α²`
+$$
+\begin{aligned}
+F(\alpha)-\alpha e_1
+&=e_2\alpha^2\\
+&=-\frac56\alpha^2,
+\end{aligned}
+$$
 
-For every nonzero α:
-
-`F(α) − αe₁ ≠ 0`
+which is nonzero for every $\alpha\ne 0$.
 
 Therefore, the folded accumulator fails the decider check.
 
 **Two valid source proofs produce a folded accumulator that is rejected for every nonzero folding challenge.**
 
-The failure is caused by the omitted second-order cross-error coefficient.
+The failure is caused by the omitted second-order cross-error coefficient. $\square$
 
 ### 2.5 Exhaustive verification over GF(101)
 
 In 𝔽₁₀₁:
 
-`−4/3 = 66`
-
-`−5/6 = 16`
-
-Hence:
-
-`F(X) = 66X + 16X²`
+$$
+-\frac43=66,
+\qquad
+-\frac56=16,
+\qquad
+F(X)=66X+16X^2.
+$$
 
 Exhaustively evaluating all 101 possible folding challenges gives:
 
@@ -210,75 +220,75 @@ Exhaustively evaluating all 101 possible folding challenges gives:
 | Incorrectly rejected                                | 100    |
 | Accepted with both correct cross-error coefficients | 101    |
 
-The only challenge accepted by the incomplete error construction is:
+The only challenge accepted by the incomplete error construction is $\alpha=0$. The rejection probability is therefore
 
-`α = 0`
-
-The rejection probability is:
-
-`100/101 ≈ 99.01%`
+$$
+\frac{100}{101}\approx 99.01\%.
+$$
 
 This is an explicit failure of perfect completeness for the stated low-degree error allocation.
 
 ## 3. The Failure Occurs for General Lookup Challenges
 
-The previous example uses `rA = rB = 1`.
+The previous example uses $r_A=r_B=1$.
 
 We now analyze arbitrary valid source challenges.
 
-Let:
+**Proof.** For arbitrary valid source challenges, set
 
-`hA = 1/(1 + rA)`
+$$
+h_A=\frac{1}{1+r_A},
+\qquad
+h_B=\frac{1}{2+r_B},
+$$
 
-`hB = 1/(2 + rB)`
-
-where:
-
-`1 + rA ≠ 0`
-
-`2 + rB ≠ 0`
+where $1+r_A\ne0$ and $2+r_B\ne0$.
 
 The two source proofs retain the same branch-selection vectors, witness coordinates, and table values.
 
-After folding, the second-order cross-error coefficient becomes:
+After folding, the second-order cross-error coefficient is
 
-`e₂ = (2 + rB)/(1 + rA) + (rA + rB)/(2 + rB) − 3`
+$$
+e_2=rac{2+r_B}{1+r_A}+rac{r_A+r_B}{2+r_B}-3.
+$$
 
-Introduce:
+Let $a=1+r_A$ and $b=2+r_B$. A direct simplification gives
 
-`a = 1 + rA`
+$$
+\begin{aligned}
+e_2
+&=\frac{b}{a}+\frac{a+b-3}{b}-3\\
+&=\frac{(b-a)^2-3a}{ab}.
+\end{aligned}
+$$
 
-`b = 2 + rB`
+Consequently,
 
-Then:
-
-`e₂ = [(b − a)² − 3a]/(ab)`
-
-Therefore:
-
-`e₂ = 0`
-
-if and only if:
-
-`(b − a)² = 3a`
+$$
+e_2=0
+\quad\Longleftrightarrow\quad
+(b-a)^2=3a.
+$$
 
 For a prime field with p > 3, there are exactly `p − 2` solutions among the `(p − 1)²` valid non-pole challenge pairs.
 
-The probability that the omitted second-order coefficient is nonzero is consequently:
+The probability that the omitted second-order coefficient is nonzero, and the resulting failure probability for uniformly sampled independent challenges, are
 
-`Pr[e₂ ≠ 0] = 1 − (p − 2)/(p − 1)²`
+$$
+\begin{aligned}
+\Pr[e_2\ne0]
+  &=1-\frac{p-2}{(p-1)^2},\\
+P_{\mathrm{fail}}
+  &=\Pr[e_2\ne0\land\alpha\ne0]
+    =\frac{p^2-3p+3}{p(p-1)}.
+\end{aligned}
+$$
 
-The fold is incorrectly rejected whenever:
+Thus
 
-`e₂ ≠ 0` and `α ≠ 0`
-
-Thus, for uniformly sampled independent challenges:
-
-`P_fail = (p² − 3p + 3) / [p(p − 1)]`
-
-As p grows:
-
-`lim(p → ∞) P_fail = 1`
+$$
+\lim_{p\to\infty}P_{\mathrm{fail}}=1.
+$$
 
 The problem therefore becomes more pronounced in large prime fields.
 
@@ -296,39 +306,46 @@ We enumerated all valid source-challenge pairs and all folding challenges.
 
 The missing cross-error term is not a rare algebraic corner case.
 
-It appears with overwhelming probability for ordinary source challenges.
+It appears with overwhelming probability for ordinary source challenges. $\square$
 
 ## 4. Combining Non-Uniform Circuit Selection with Vector Lookups Produces Degree-4 Constraints
 
 Section 4.4 introduces vector-valued lookups.
 
-For a vector witness, compression uses:
+For a vector witness, compression uses
 
-`wᵢ(β) = Σₛ wᵢ,ₛ βₛ`
+$$
+w_i(\boldsymbol\beta)=\sum_s w_{i,s}\beta_s.
+$$
 
 Section 6 independently introduces non-uniform circuit selection through variables bⱼ.
 
-The direct combination yields a lookup check of the form:
+The direct combination yields the lookup check
 
-`hᵢ · Σⱼ bⱼ(Σₛ wⱼ,ᵢ,ₛ βₛ + r) = 1`
+$$
+h_i\sum_j b_j
+\left(\sum_s w_{j,i,s}\beta_s+r\right)=1.
+$$
 
-This contains the monomial:
+Its expansion contains the monomial
 
-`bⱼ · hᵢ · wⱼ,ᵢ,ₛ · βₛ`
+$$
+b_jh_iw_{j,i,s}\beta_s,
+$$
 
 Its total degree is **4**.
 
-Accordingly, a correctly homogenized degree-4 relation generally requires three intermediate cross-error coefficients:
+Accordingly, a correctly homogenized degree-4 relation generally requires
 
-`e₁X + e₂X² + e₃X³`
+$$
+E(X)=e_1X+e_2X^2+e_3X^3.
+$$
 
 The single degree-2 error vector described on page 44 cannot represent these terms.
 
 ### 4.1 Explicit vector-lookup example
 
-Use the fixed vector lookup table:
-
-`t = ((1,0), (0,2))`
+Use the fixed vector lookup table $\mathbf t=((1,0),(0,2))$.
 
 Construct two valid source proofs.
 
@@ -352,13 +369,14 @@ The multiplicity vectors and table inverses are assigned consistently with the s
 
 Both endpoint proofs satisfy their vector-lookup checks.
 
-Under the direct composition of the two protocols, the correctly homogenized degree-4 folding residual expands to:
+Under the direct composition of the two protocols, the correctly homogenized degree-4 folding residual expands to
 
-`F_vec(X) = −(4/3)X − (19/6)X² − (3/2)X³`
+$$
+F_{\mathrm{vec}}(X)
+=-\frac43X-\frac{19}{6}X^2-\frac32X^3.
+$$
 
-In particular:
-
-`e₃ = −3/2 ≠ 0`
+In particular, $e_3=-3/2\ne0$.
 
 Consequently, adding only the missing X² term from the scalar lookup case is still insufficient for this direct vector-lookup composition.
 
@@ -368,47 +386,37 @@ This degree issue follows directly from combining the verification relations in 
 
 ## 5. Duplicate Lookup Table Entries Break the Specified Honest Prover
 
-Definition 12 on page 33 allows a lookup table:
-
-`t ∈ 𝔽ᵀ`
+Definition 12 on page 33 allows a lookup table $\mathbf t\in\mathbb F^T$.
 
 It does not require table entries to be distinct.
 
 However, the honest prover algorithm on page 34 computes multiplicities independently for every table position:
 
-`mᵢ = Σⱼ 1[wⱼ = tᵢ]`
+$$
+m_i=\sum_j\mathbf 1[w_j=t_i].
+$$
 
-Consider the valid lookup instance:
-
-`t = (0,0)`
-
-`w = (0)`
+Consider the valid lookup instance $\mathbf t=(0,0)$ and $\mathbf w=(0)$.
 
 The witness value appears in the table, so the lookup relation is satisfied.
 
-Following the specified honest prover algorithm gives:
+Following the specified honest prover algorithm gives $\mathbf m=(1,1)$. For every nonzero challenge $r$,
 
-`m = (1,1)`
+$$
+h=\frac1r,
+\qquad
+\mathbf g=\left(\frac1r,\frac1r\right).
+$$
 
-For every nonzero challenge r:
+The verifier asks for $\sum h=\sum g$, but
 
-`h = 1/r`
+$$
+\sum h=\frac1r
+\qquad\text{while}\qquad
+\sum g=\frac2r.
+$$
 
-`g = (1/r, 1/r)`
-
-The verifier checks:
-
-`Σh = Σg`
-
-But:
-
-`Σh = 1/r`
-
-`Σg = 2/r`
-
-Therefore:
-
-`Σh ≠ Σg`
+Thus $\sum h\ne\sum g$, and the honest prover fails on a valid lookup instance.
 
 The honest prover fails on a valid lookup instance.
 
@@ -416,9 +424,7 @@ The issue arises because one lookup occurrence is counted once for each duplicat
 
 A correct multiplicity assignment must either require distinct table entries or choose a canonical representative for each distinct table value.
 
-For example:
-
-`m = (1,0)`
+For example, $\mathbf m=(1,0)$
 
 resolves this particular instance.
 
@@ -426,23 +432,15 @@ The same duplicate-counting issue also invalidates the claimed sparsity bound fo
 
 ## 6. The Claimed 3G Recursive Cost Is Not Derived by Theorem 3
 
-Theorem 3 on page 28 gives the recursive group scalar multiplication cost of the CV construction as:
+Theorem 3 on page 28 gives the recursive group scalar multiplication cost of the CV construction as $k+2$, where $k$ is the number of prover messages in the underlying $(2k-1)$-move protocol.
 
-`k + 2`
+The lookup protocol in Section 6 has three messages, so $k=2$. Direct substitution gives
 
-where k is the number of prover messages in the underlying `(2k − 1)`-move protocol.
+$$
+k+2=4G,
+$$
 
-The lookup protocol in Section 6 has three messages:
-
-`k = 2`
-
-Direct substitution gives:
-
-`k + 2 = 4G`
-
-However, Corollary 1 on page 44 claims:
-
-`3G`
+whereas Corollary 1 on page 44 claims $3G$.
 
 The proof of Corollary 1 invokes Theorem 3 without specifying an additional transformation that reduces the count from 4G to 3G.
 
@@ -456,9 +454,11 @@ Furthermore, repairing the incorrect degree classification of the lookup constra
 
 ## 7. Final Proof Size Omits the Dependence on the Number of Branch Circuits
 
-Step 4 of protocol Π_mplkup on page 42 defines the prover-message vector as:
+Step 4 of protocol $\Pi_{\mathsf{mplkup}}$ on page 42 defines the prover-message vector as
 
-`w* ∈ 𝔽^(Icn)`
+$$
+\mathbf w^*\in\mathbb F^{Icn}.
+$$
 
 This vector concatenates I branch blocks, each containing cn field elements.
 
@@ -468,27 +468,27 @@ This permits efficient per-step updates.
 
 However, after accumulating executions from different branches, the accumulated witness can contain nonzero values in multiple branch blocks.
 
-For branch j, the accumulated block has the form:
+For branch $j$, the accumulated block has the form
 
-`acc.w⁽ʲ⁾ = Σₜ:pcₜ=j αₜwₜ`
+$$
+\mathbf w_{\mathrm{acc}}^{(j)}
+=\sum_{t:\,\mathsf{pc}_t=j}\alpha_t\mathbf w_t.
+$$
 
 After sufficiently many steps, all I branch blocks may become nonzero.
 
 Therefore, the following two statements are not equivalent:
 
-**Per-step update complexity:**
-
-`O(cn)`
-
-**Worst-case accumulated witness length:**
-
-`O(Icn)`
+$$
+\begin{aligned}
+\text{per-step update complexity} &\;=O(cn),\\
+\text{worst-case accumulated witness length} &\;=O(Icn).
+\end{aligned}
+$$
 
 The decider described on page 22 verifies openings of the accumulated message commitments.
 
-Corollary 1 nevertheless reports a final proof size of:
-
-`O(cn + T + ℓ_lk)`
+Corollary 1 nevertheless reports a final proof size of $O(cn+T+\ell_{\mathsf{lk}})$
 
 without an I factor for the concatenated branch witnesses.
 
@@ -500,9 +500,7 @@ Appendix C contains a related accounting discrepancy for non-uniform CCS witness
 
 ## 8. Implications for Corollary 1
 
-The relevant construction chain is:
-
-`Special-sound protocol → CV → Fiat–Shamir + commitments → Accumulation → IVC`
+**Construction chain.** Special-sound protocol → CV → Fiat–Shamir and commitments → accumulation → IVC.
 
 The generic accumulation theorem assumes that the verification equations have been assigned their correct algebraic degrees and that the corresponding cross-error terms are maintained.
 

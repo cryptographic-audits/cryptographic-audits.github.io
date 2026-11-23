@@ -1,0 +1,40 @@
+---
+---
+
+@use 'abstracts/variables' with (
+  $theme: '{{ site.theme_mode }}'
+);
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+.home-hero {
+  overflow: hidden;
+  margin: 0 0 2rem;
+  border: 1px solid var(--main-border-color);
+  border-radius: 0.9rem;
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.home-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.home-hero figcaption {
+  padding: 0.8rem 1rem;
+  color: var(--text-muted-color);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+#sidebar #avatar img {
+  object-fit: contain;
+  background: #fff;
+}
