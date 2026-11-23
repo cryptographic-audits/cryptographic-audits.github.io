@@ -1,13 +1,13 @@
 ---
 title: "Technical Concerns on FLIP-and-Prove R1CS"
-description: "Correctness counterexamples, interface gaps, and incomplete security accounting in the August 28, 2026 manuscript of FLIP-and-Prove R1CS."
+description: "Correctness counterexamples, interface gaps, and incomplete security accounting in the current IACR ePrint version of FLIP-and-Prove R1CS."
 date: 2026-11-21 23:28:23 +0800
 categories: [Audits, Proof Systems]
 tags: [flip-and-prove, r1cs, folding, groth16, kzg, knowledge-soundness]
 math: true
 ---
 
-> **Scope.** These findings concern the 27-page manuscript dated August 28, 2026, as written. They distinguish concrete failures in printed equations from broader questions that would require additional argument.
+> **Scope.** This report has been updated against the current latest version available from IACR ePrint. It distinguishes concrete failures in printed equations from broader questions that would require additional argument.
 {: .prompt-info }
 
 [View the original Gist](https://gist.github.com/cxcx52/55a6c56ab3cd91edf214079a8016a3f6) · [Open the paper](https://eprint.iacr.org/2024/1364)
@@ -16,7 +16,7 @@ math: true
 
 **Paper under examination:** Anca Nitulescu, Nikitas Paslis, and Carla Ràfols, FLIP-and-Prove R1CS, IACR ePrint 2024/1364.
 
-**Version examined:** 27-page manuscript, August 28, 2026.
+**Status:** Updated against the current latest version available from IACR ePrint.
 
 ---
 
@@ -48,21 +48,26 @@ We emphasize the precise scope of this criticism: the findings establish failure
 
 **Location:** Page 11, Figure 3.
 
-FLIP folds witnesses according to
+**Printed invariant.** FLIP folds the witness and updates the two-tier commitment as
 
-w′[i] = w[i] + α · w[i + ν/2].
+$$
+\begin{aligned}
+w'[i] &= w[i]+\alpha\,w[i+\nu/2],\\
+W' &= W+\alpha^{-1}W_{LR}+\alpha W_{RL}.
+\end{aligned}
+$$
 
-Its two-tier commitment is updated using cross terms:
+Consistency requires the commitment key to fold as
 
-W′ = W + α⁻¹W_LR + αW_RL.
+$$
+q'[i]=q[i]+\alpha^{-1}q[i+\nu/2].
+$$
 
-For this equation to remain consistent, the corresponding commitment key must satisfy
+Figure 3 instead prints
 
-q′[i] = q[i] + α⁻¹q[i + ν/2].
-
-However, Figure 3 prints
-
-q′[i] = q[i] + α⁻¹q[i + ν/2 − 1].
+$$
+q'[i]=q[i]+\alpha^{-1}q[i+\nu/2-1].
+$$
 
 The final “− 1” is wrong.
 
@@ -70,49 +75,50 @@ This is not a harmless formatting issue. The printed formula fails on the smalle
 
 ### Explicit counterexample
 
-Work over the field 𝔽₁₀₁ and represent pairing-group elements by their scalar exponents.
+**Proof.** Work over $\mathbb F_{101}$ and represent pairing-group elements by their scalar exponents. Choose
 
-Choose
+$$
+\alpha=2,
+\qquad
+(w_0,w_1)=(1,2),
+\qquad
+(q_0,q_1)=(3,5).
+$$
 
-α = 2,
+The target-group update required by the commitment invariant is
 
-(w₀, w₁) = (1, 2),
+$$
+\begin{aligned}
+W'
+&=w_0q_0+w_1q_1+\alpha^{-1}w_0q_1+\alpha w_1q_0\\
+&=78\pmod{101}.
+\end{aligned}
+$$
 
-(q₀, q₁) = (3, 5).
+The folded witness is $w'=w_0+\alpha w_1=5$. The printed key update instead gives
 
-The required target-group update is
+$$
+\begin{aligned}
+q'_{\mathrm{printed}}
+  &=q_0+\alpha^{-1}q_0=55\pmod{101},\\
+w'q'_{\mathrm{printed}}
+  &=5\cdot55=73\pmod{101}.
+\end{aligned}
+$$
 
-W′ = w₀q₀ + w₁q₁ + α⁻¹w₀q₁ + αw₁q₀
-
-= 78 mod 101.
-
-Meanwhile,
-
-w′ = w₀ + αw₁ = 5.
-
-The printed formula gives
-
-q′ = q₀ + α⁻¹q₀ = 55 mod 101,
-
-and therefore
-
-w′q′ = 5 · 55 = 73 mod 101.
-
-Consequently,
-
-73 ≠ 78.
+Thus $w'q'_{\mathrm{printed}}=73\ne78=W'$.
 
 The supposed commitment invariant fails.
 
-Using the correct right-half index instead gives
+Using the correct right-half index gives
 
-q′ = q₀ + α⁻¹q₁ = 56 mod 101,
+$$
+q'_{\mathrm{correct}}=q_0+\alpha^{-1}q_1=56,
+\qquad
+w'q'_{\mathrm{correct}}=5\cdot56=78\pmod{101},
+$$
 
-so that
-
-w′q′ = 5 · 56 = 78 mod 101,
-
-as required.
+as required. $\square$
 
 The manuscript also refers to cross terms with inconsistent or undefined indices in the same protocol figure.
 
@@ -124,17 +130,25 @@ Correcting the indexing may be straightforward. That does not change the fact th
 
 **Location:** Page 10, Figure 2.
 
-The manuscript defines a quotient polynomial of the form
+**Printed quotient.** The manuscript defines
 
-Π(X) = (g(X) − g(r))/(X − r) + ξ(g′(X) − g′(r))/(X − r).
+$$
+\Pi(X)
+=\frac{g(X)-g(r)}{X-r}
++\xi\frac{g'(X)-g'(r)}{X-r}.
+$$
 
-However, its commitment formula sums coefficients starting from index 1:
+Its commitment formula, however, starts at index $1$:
 
-[Π]₂ = ∑ᵢ₌₁ᵏ⁻¹ Πᵢ[yⁱ]₂.
+$$
+[\Pi]_2=\sum_{i=1}^{k-1}\Pi_i[y^i]_2.
+$$
 
-Under the usual polynomial convention
+Under the usual convention
 
-Π(X) = Π₀ + Π₁X + Π₂X² + ⋯,
+$$
+\Pi(X)=\Pi_0+\Pi_1X+\Pi_2X^2+\cdots,
+$$
 
 this formula omits the constant coefficient Π₀.
 
@@ -142,35 +156,33 @@ That omission is fatal in the simplest case.
 
 ### Explicit counterexample
 
-For k = 2, the relevant polynomials are
+**Proof.** For $k=2$, let
 
-g(X) = 1 + α⁻²X,
+$$
+g(X)=1+\alpha^{-2}X,
+\qquad
+g'(X)=1+\alpha^{-1}X.
+$$
 
-g′(X) = 1 + α⁻¹X.
+The quotient combination is constant:
 
-Their quotient combination is the constant polynomial
+$$
+\Pi(X)=\alpha^{-2}+\xi\alpha^{-1}.
+$$
 
-Π(X) = α⁻² + ξα⁻¹.
+Over $\mathbb F_{101}$, choose $\alpha=2$, $\xi=5$, $y=7$, and $r=3$. Then
 
-Choose, over 𝔽₁₀₁,
-
-α = 2, ξ = 5, y = 7, r = 3.
-
-Then
-
-Π(X) = 28 mod 101.
-
-The correct KZG verification identity requires
-
-(y − r)Π(y) = 4 · 28 = 11 mod 101.
+$$
+\Pi(X)=28,
+\qquad
+(y-r)\Pi(y)=4\cdot28=11\pmod{101}.
+$$
 
 But the printed commitment formula begins at index 1. For this constant quotient polynomial, it produces the zero commitment.
 
-The resulting verification equation becomes
+The resulting verification equation is therefore $11\ne0$.
 
-11 ≠ 0.
-
-Thus the printed algorithm rejects an honestly generated opening.
+Thus the printed algorithm rejects an honestly generated opening. $\square$
 
 A corrected formula must include the constant coefficient, unless the authors intended a nonstandard coefficient-index convention that they failed to define.
 
@@ -180,61 +192,59 @@ Either way, the algorithm as specified does not establish its advertised correct
 
 **Location:** Page 17, Figures 4 and 5.
 
-Write the pairing verification equation in additive exponent notation:
+**Sign calculation.** In additive exponent notation, the pairing verification equation is
 
-AB − δC − S − ψu⁻¹E + ϕρW = uα_Gβ_G,
+$$
+AB-\delta C-S-\psi u^{-1}E+\phi\rho W
+=u\alpha_G\beta_G,
+$$
 
 where S denotes the public-input contribution and α_G, β_G are the Groth16 setup scalars.
 
-Solving for C gives
+Solving for $C$ gives
 
-δC = AB − S − ψu⁻¹E + ϕρW − uα_Gβ_G.
+$$
+\delta C
+=AB-S-\psi u^{-1}E+\phi\rho W-u\alpha_G\beta_G.
+$$
 
-Notice the sign of the witness-commitment term:
-
-+ϕρW.
+The witness-commitment term therefore has sign $+\phi\rho W$.
 
 Figure 5 instead uses the negative sign.
 
-Substituting the printed simulator into the verifier leaves an unwanted residual
-
-2ϕρW.
+Substituting the printed simulator into the verifier leaves the residual $2\phi\rho W$.
 
 Unless that residual happens to vanish, the simulated proof is rejected.
 
 ### Explicit counterexample
 
-Over 𝔽₁₀₁, choose
+**Proof.** Over $\mathbb F_{101}$, choose
 
-u = 1,
+$$
+u=1,
+\quad
+AB=u\alpha_G\beta_G=2,
+\quad
+S=E=0,
+\quad
+\delta=1,
+\quad
+\phi\rho=3,
+\quad
+W=4.
+$$
 
-AB = uα_Gβ_G = 2,
+The printed simulator produces $C=-12\pmod{101}$. The verifier then computes
 
-S = E = 0,
+$$
+\begin{aligned}
+AB-\delta C+\phi\rho W
+&=2-(-12)+12\\
+&=26\pmod{101}.
+\end{aligned}
+$$
 
-δ = 1,
-
-ϕρ = 3,
-
-W = 4.
-
-The printed simulator produces
-
-C = −12 mod 101.
-
-The verifier then obtains
-
-AB − δC + ϕρW
-
-= 2 − (−12) + 12
-
-= 26 mod 101.
-
-But the required right-hand side is 2.
-
-Therefore,
-
-26 ≠ 2.
+The required right-hand side is $2$, so $26\ne2$. $\square$
 
 The simulator's own output does not satisfy the verifier's equation.
 
@@ -244,113 +254,119 @@ Nevertheless, a zero-knowledge argument cannot simply cite a simulator whose out
 
 ## 5. FLIP and r-Groth Do Not Use the Same Relaxed-R1CS Representation
 
-Locations: Pages 7–8 and 17.
+**Locations:** Pages 7–8 and 17.
 
 This problem is more serious than a misplaced index.
 
-FLIP defines the relaxed witness vector as
+**Interface mismatch.** FLIP defines the relaxed witness and relation as
 
-z = (u, x, w),
+$$
+\mathbf z=(u,\mathbf x,\mathbf w),
+\qquad
+A\mathbf z\circ B\mathbf z=uC\mathbf z+\mathbf e.
+$$
 
-subject to
+In particular, $z_0=u$, and folding changes this coordinate according to
 
-Az ∘ Bz = uCz + e.
+$$
+u'=u_1+\alpha u_2.
+$$
 
-In particular,
-
-z₀ = u.
-
-The folding operation changes this coordinate:
-
-u′ = u₁ + αu₂.
-
-But Figure 4 describes the r-Groth prover and verifier while explicitly assuming
-
-z₀ = 1.
+Figure 4, by contrast, describes the r-Groth prover and verifier under the explicit convention $z_0=1$.
 
 These are different representations.
 
-They agree for an ordinary, unrelaxed R1CS instance with u = 1.
+They agree for an ordinary, unrelaxed R1CS instance with $u=1$.
 
 They do not agree for a generic folded instance.
 
 ### A valid folded instance rejected by the printed interface
 
-Take
+**Proof.** Take
 
-A = B = C = [[1, 0], [0, 0]].
+$$
+A=B=C=
+\begin{pmatrix}
+1&0\\
+0&0
+\end{pmatrix}.
+$$
 
-Let the two initial witnesses be
+Let
 
-z₁ = z₂ = (1, 0),
-
-with
-
-u₁ = u₂ = 1,
-
-e₁ = e₂ = 0.
+$$
+\mathbf z_1=\mathbf z_2=(1,0),
+\qquad
+u_1=u_2=1,
+\qquad
+\mathbf e_1=\mathbf e_2=\mathbf0.
+$$
 
 Both initial instances are valid.
 
 Their cross term is zero.
 
-Choose α = 1. FLIP produces
+Choose $\alpha=1$. FLIP produces
 
-u′ = 2,
+$$
+u'=2,
+\qquad
+\mathbf z'=(2,0),
+\qquad
+\mathbf e'=\mathbf0.
+$$
 
-z′ = (2, 0),
+The relaxed relation is satisfied because
 
-e′ = 0.
-
-The relaxed relation is satisfied:
-
-Az′ ∘ Bz′ = (4, 0),
-
-u′Cz′ = (4, 0).
+$$
+A\mathbf z'\circ B\mathbf z'=(4,0)
+=u'C\mathbf z'.
+$$
 
 Thus the folded instance is perfectly valid.
 
-But imposing the r-Groth convention z₀ = 1 changes the first constraint to
-
-1 = 2.
+Imposing the r-Groth convention $z_0=1$, however, changes the first constraint to $1=2$.
 
 This is false.
 
 Consequently, the quotient polynomial constructed by the printed r-Groth prover does not satisfy the required divisibility condition.
 
-The advertised composition fails on an ordinary, honestly generated folded instance.
+The advertised composition fails on an ordinary, honestly generated folded instance. $\square$
 
 This is not a negligible-probability corner case.
 
 The conflict occurs whenever u′ differs from 1.
 
-One possible repair is to normalize the folded instance when u′ ≠ 0 and transform the corresponding witness, error, and commitments consistently.
+One possible repair is to normalize the folded instance when $u'\ne0$ and transform the corresponding witness, error, and commitments consistently.
 
 But that transformation is not supplied as the complete interface in the printed construction.
 
-There is also a separate domain problem: FLIP samples challenges from 𝔽 while using α⁻¹, and r-Groth uses u⁻¹ even though the relaxed relation permits u = 0.
+There is also a separate domain problem: FLIP samples challenges from $\mathbb F$ while using $\alpha^{-1}$, and r-Groth uses $u^{-1}$ even though the relaxed relation permits $u=0$.
 
 Perfect completeness cannot be claimed over a domain on which the honest prover algorithm is undefined.
 
 ## 6. The Verifier Does Not Authenticate the Original Commitments It Purports to Fold
 
-Locations: Pages 8–11, Section 3 and Figure 3.
+**Locations:** Pages 8–11, Section 3 and Figure 3.
 
 This is the most consequential issue for the paper's stated committed-input functionality.
 
-Section 3 describes folding an initial collection of committed statements:
+Section 3 describes folding the committed statements
 
-(xᵢ, [wᵢ]₁), for i = 0, …, k − 1.
+$$
+(x_i,[w_i]_1),
+\qquad i=0,\ldots,k-1.
+$$
 
 If these commitments are externally prescribed, a correct folding protocol must establish that the folded output corresponds to those specific commitments.
 
-But Figure 3 gives the verifier a batch state of the form
+Figure 3 instead gives the verifier the batch state
 
-Φ = (W_T, E_T, {(uᵢ, xᵢ)}ᵢ),
-
-where
-
-W_T = ∑ᵢ e([wᵢ]₁, [qᵢ]₂).
+$$
+\Phi=\bigl(W_T,E_T,\{(u_i,x_i)\}_i\bigr),
+\qquad
+W_T=\sum_i e([w_i]_1,[q_i]_2).
+$$
 
 The individual original commitments appear in the prover's witness state.
 
@@ -360,37 +376,33 @@ That is a missing authentication boundary.
 
 ### A commitment-substitution counterexample
 
-Consider a deliberately simple deterministic commitment:
+**Proof.** Consider the deterministic commitment $\operatorname{Com}(w)=wP_1$ and the relaxed constraint
 
-Com(w) = wP₁.
+$$
+wu=ux+e.
+$$
 
-Use the relaxed constraint
+For ordinary R1CS inputs with $u=1$ and $e=0$, this requires $w=x$.
 
-wu = ux + e.
+Suppose two externally prescribed committed statements satisfy
 
-For ordinary R1CS inputs with u = 1 and e = 0, this requires
+$$
+x_0=x_1=0,
+\qquad
+[w_0]_1=[w_1]_1=P_1.
+$$
 
-w = x.
+These commitments fix $w_0=w_1=1$.
 
-Suppose two externally prescribed committed statements both have
+Neither original committed statement satisfies the relation, because each requires $w_i=0$.
 
-x₀ = x₁ = 0,
+Now let the prover disregard the original commitments and internally choose
 
-[w₀]₁ = [w₁]₁ = P₁.
-
-These commitments fix w₀ = w₁ = 1.
-
-Neither original committed statement satisfies the relation, because each requires wᵢ = 0.
-
-Now let a prover disregard those original commitments and internally choose
-
-w₀ = w₁ = 0.
-
-The prover can use
-
-W_T = 0,
-
-E_T = 0,
+$$
+w_0=w_1=0,
+\qquad
+W_T=E_T=0,
+$$
 
 with zero cross terms.
 
@@ -426,21 +438,21 @@ No asymptotic notation changes that fact.
 
 This observation does not imply that every possible repair requires k separate pairing evaluations. Succinct authentication mechanisms may exist.
 
-It does imply that the stronger committed-input functionality is not established by the displayed verifier interface.
+It does imply that the stronger committed-input functionality is not established by the displayed verifier interface. $\square$
 
 ## 7. A Security Assumption Is Trivially False as Defined
 
 **Location:** Page 25, Definitions 3 and 4.
 
-The manuscript's kernel assumptions define success using a pairing-kernel equation of the form
+The manuscript's kernel assumptions define success through
 
-∑ᵢ e([wᵢ]₁, [yᵢ]₂) = 0.
+$$
+\sum_i e([w_i]_1,[y_i]_2)=0.
+$$
 
 However, the printed success condition does not require the output vector to be nonzero.
 
-An adversary can therefore output
-
-[wᵢ]₁ = 0 for every i.
+An adversary can therefore output $[w_i]_1=0$ for every $i$.
 
 The equation holds with probability 1.
 
@@ -458,12 +470,16 @@ The corrected assumption must be stated and its applicability justified.
 
 ## 8. The End-to-End Knowledge-Soundness Argument Is Not Closed
 
-The paper needs a complete implication of the following form:
+The paper needs to establish the complete implication
 
-Accepted final proof
-⇒ extractable opening of the folded committed instance
-⇒ extractable original witnesses
-⇒ all original statements satisfy the intended relation.
+$$
+\begin{aligned}
+\text{accepted final proof}
+&\Longrightarrow \text{extractable opening of the folded instance}\\
+&\Longrightarrow \text{extractable original witnesses}\\
+&\Longrightarrow \text{all original statements satisfy the relation}.
+\end{aligned}
+$$
 
 That implication cannot be obtained merely by putting a folding theorem next to a final-proof soundness theorem.
 
@@ -479,9 +495,11 @@ But the folding composition needs knowledge soundness: an efficient extractor mu
 
 This matters particularly for relaxed R1CS with unrestricted error witnesses and randomized commitments.
 
-Given u, x, and a freely chosen w, the error can always be defined as
+Given $u$, $\mathbf x$, and a freely chosen $\mathbf w$, the error can always be defined as
 
-e = Az ∘ Bz − uCz.
+$$
+\mathbf e=A\mathbf z\circ B\mathbf z-uC\mathbf z.
+$$
 
 Moreover, a randomized Pedersen commitment in a prime-order cyclic group has, mathematically, an opening to any specified message under some randomness, even when computing that randomness is infeasible.
 
@@ -503,17 +521,12 @@ But the authors need to demonstrate that the extracted opening is valid for the 
 
 In particular, they must reconcile:
 
-The initial input-binding relation.
-
-The two-tier commitment keys.
-
-The independent setup assumptions.
-
-The extended r-Groth commitment keys.
-
-The Fiat–Shamir transcript and challenge binding.
-
-The composition's extraction probability and runtime.
+- the initial input-binding relation;
+- the two-tier commitment keys;
+- the independent setup assumptions;
+- the extended r-Groth commitment keys;
+- the Fiat–Shamir transcript and challenge binding; and
+- the composition's extraction probability and runtime.
 
 An extractor for one relation is not automatically an extractor for a different relation.
 
@@ -521,27 +534,36 @@ An extractor for one relation is not automatically an extractor for a different 
 
 **Location:** Page 13, after Equation (4).
 
-The proof introduces three coefficients νᵢ satisfying
+**Linear system.** The proof introduces coefficients $\nu_i$ satisfying
 
-∑ᵢ₌₁³ νᵢ αᵢᵞ = 0
-
-for every γ ∈ {−1, 0, 1}.
+$$
+\sum_{i=1}^{3}\nu_i\alpha_i^{\gamma}=0
+\qquad
+\text{for every }\gamma\in\{-1,0,1\}.
+$$
 
 For three distinct nonzero challenges, these are three independent homogeneous linear equations in three unknowns.
 
-Generically, the only solution is
+Generically, the only solution is $\nu_1=\nu_2=\nu_3=0$.
 
-ν₁ = ν₂ = ν₃ = 0.
+For challenges $1,2,3$ over $\mathbb F_{101}$, the corresponding generalized Vandermonde system is nonsingular:
 
-For example, with challenges 1, 2, and 3 over 𝔽₁₀₁, the corresponding generalized Vandermonde determinant is
-
-34 ≠ 0.
+$$
+\det
+\begin{pmatrix}
+1&1&1\\
+1&2&3\\
+1&2^{-1}&3^{-1}
+\end{pmatrix}
+=34\ne0
+\pmod{101}.
+$$
 
 Yet the proof uses these coefficients to extract a nonzero constant commitment term.
 
 That inference does not follow.
 
-To isolate the constant coefficient, the γ = 0 condition should have a different normalization, rather than being zero like the others.
+To isolate the constant coefficient, the $\gamma=0$ condition needs a different normalization rather than the same zero right-hand side.
 
 This may be a repairable interpolation error.
 
@@ -569,9 +591,7 @@ A concrete verifier-cost claim should be supported by a concrete verifier-cost a
 
 ### 9.2 The logarithmic verifier claim excludes substantial input processing
 
-For k public-input vectors of dimension ℓ, the displayed folding algorithm performs k − 1 vector-folding operations.
-
-This entails Θ(kℓ) field arithmetic under the literal procedure.
+For $k$ public-input vectors of dimension $\ell$, the displayed algorithm performs $k-1$ vector-folding operations and therefore entails $\Theta(k\ell)$ field arithmetic under the literal procedure.
 
 The paper acknowledges that its logarithmic bound excludes public-input processing.
 
@@ -579,39 +599,33 @@ That qualification is important.
 
 The defensible claim is logarithmic folding-proof communication and associated cryptographic verification work, excluding the input-dependent component.
 
-It is not unconditional O(log k) total verification work for arbitrarily large public statements.
+It is not unconditional $O(\log k)$ total verification work for arbitrarily large public statements.
 
 ### 9.3 The folding prover is not free
 
-For k original instances, Figure 3 computes k − 1 cross-term vectors.
+For $k$ original instances, Figure 3 computes $k-1$ cross-term vectors.
 
 Each cross term is associated with an R1CS relation of size n.
 
 The prover must compute those terms and generate corresponding commitments.
 
-At the very least, the cost model must reflect:
+At the very least, the cost model must include:
 
-The k initial witness commitments.
+- the $k$ initial witness commitments;
+- the $k-1$ cross-term computations and commitments;
+- the two-tier commitment operations;
+- the final r-Groth proof; and
+- the associated memory footprint.
 
-The k − 1 cross-term computations.
+For the paper's illustrative parameters $k=1024$ and $n=65{,}536$, the cross-term commitments alone involve
 
-The k − 1 cross-term commitments.
+$$
+(k-1)n
+=1023\cdot65{,}536
+=67{,}043{,}328
+$$
 
-The two-tier commitment operations.
-
-The final r-Groth proof.
-
-The associated memory footprint.
-
-For the paper's illustrative parameters
-
-k = 1024 and n = 65,536,
-
-the cross-term commitments alone involve
-
-1023 × 65,536 = 67,043,328
-
-coefficient–base inputs before accounting for MSM optimization.
+coefficient-base inputs before accounting for MSM optimization.
 
 This number is not a count of independent scalar multiplications. Efficient MSM algorithms can share substantial work.
 
@@ -621,11 +635,16 @@ But the underlying work is not negligible merely because the final communication
 
 The correct comparison is
 
-T_baseline = k · T_Groth16 + T_aggregation,
-
-against
-
-T_FLIP = T_initial commitments + T_folding + T_r-Groth.
+$$
+\begin{aligned}
+T_{\mathrm{baseline}}
+  &=k\,T_{\mathrm{Groth16}}+T_{\mathrm{aggregation}},\\
+T_{\mathrm{FLIP}}
+  &=T_{\mathrm{initial\ commitments}}
+    +T_{\mathrm{folding}}
+    +T_{r\text{-}\mathrm{Groth}}.
+\end{aligned}
+$$
 
 The paper's argument that it avoids k − 1 Groth16 proofs identifies a potentially significant saving.
 
