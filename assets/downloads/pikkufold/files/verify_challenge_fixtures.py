@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent no-dependency arithmetic sanity check for Round12 challenge fixtures."""
+"""Independent no-dependency arithmetic sanity check for Conditional verifier replay challenge fixtures."""
 import cmath
 import json
 import math

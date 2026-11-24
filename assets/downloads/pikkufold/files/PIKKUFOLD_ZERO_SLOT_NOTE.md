@@ -18,7 +18,7 @@ Use the implementation parameters
 - `k = 2` fresh inputs, three JL layers, and `m = 2^18` ring elements per input (Table 6);
 - challenge weight `s = 23`, coefficients in `{0,+1,-1}`, and operator-norm rejection threshold `gamma = 8.357`.
 
-Let `beta = 739582794740178 (mod q)`. Exact modular checks give `beta^64 = -1`, `beta^128 = 1`, and `beta^((q-1)/2) = -1`. The primality and order checks, including a primality certificate for `q`, are in `round9/verify_round9.py`. Thus `beta` is a nonsquare 128-th root of unity and `X^2 - beta` is one of the 64 irreducible quadratic CRT factors of `X^128 + 1` modulo `q`.
+Let `beta = 739582794740178 (mod q)`. Exact modular checks give `beta^64 = -1`, `beta^128 = 1`, and `beta^((q-1)/2) = -1`. The primality and order checks, including a primality certificate for `q`, are in `zero-slot-certificate/verify_zero_slot_parameters.py`. Thus `beta` is a nonsquare 128-th root of unity and `X^2 - beta` is one of the 64 irreducible quadratic CRT factors of `X^128 + 1` modulo `q`.
 
 Put `Y = X^2` and define the idempotent
 
@@ -73,7 +73,7 @@ epsilon_C >= (M-1)/|C| >= 4337663/N0.
 
 Heuristic 1 predicts `epsilon_C approximately phi/(e*q^e) = 64/q^2`, approximately `2^-94`, so the **certified lower bound** is about **742.5 times larger** than that nominal estimate. The conjecture also has the premise `|C| >= q^2`. We do not claim to have independently certified that cardinality condition. If it fails, the heuristic is inapplicable; if it holds, its prediction is inconsistent with the certified pointwise lower bound. Importantly, neither the counting result nor the actual zero-slot probability bound requires that cardinality premise.
 
-The norm certificate uses rational bounds on trigonometric values: a rational enclosure for `pi`, truncated Taylor series with explicit remainders, a `2^24` fixed-point unit-root table, and one-unit component enclosures. For each weight-23 candidate, the code computes an integer upper and lower enclosure for the maximum squared Fourier magnitude, then compares them against the integer representation of `gamma^2`. There are **zero ambiguous candidates**. Signed monomial rotations preserve the exact canonical operator norm. `round9/verify_many_orbits.py` reproduces the counts; `round9/reproduce_enumeration.py` constructs the enclosures.
+The norm certificate uses rational bounds on trigonometric values: a rational enclosure for `pi`, truncated Taylor series with explicit remainders, a `2^24` fixed-point unit-root table, and one-unit component enclosures. For each weight-23 candidate, the code computes an integer upper and lower enclosure for the maximum squared Fourier magnitude, then compares them against the integer representation of `gamma^2`. There are **zero ambiguous candidates**. Signed monomial rotations preserve the exact canonical operator norm. `zero-slot-certificate/verify_many_orbits.py` reproduces the counts; `zero-slot-certificate/reproduce_enumeration.py` constructs the enclosures.
 
 ## 3. A public instance with no admissible short witness
 
@@ -81,7 +81,7 @@ Choose a commitment key `F` of the original shape (rank 12 for `m = 2^18`), but 
 
 At the all-zero Boolean point, multilinear evaluation returns the first entry. Therefore any valid opening `w_0` of the first input must have its first ring element congruent to `Lambda` modulo `q`. Its centered coefficient vector already has one coefficient with magnitude `(q-1)/64 = 17592186044374`. The implementation's entire fresh-input norm bound at `m=2^18` is only about `5931641.60`. Thus **the input relation has no short opening for any `F`**, even before enforcing the commitment equation `Fw=0`.
 
-This also holds against the larger extraction input cap used in Theorem 1. For completeness, any integral lift `u` of `Lambda` has 63 vanishing quadratic CRT components modulo `q`. Its nonzero algebraic norm, computed as the resultant against `X^128+1`, is divisible by `q^126`. The norm is nonzero since `X^128+1` is irreducible over `Q` and `u` is nonzero in `R_q`. Parseval's identity followed by AM–GM over the 128 complex embeddings gives `|Norm(u)| <= ||u||_2^128`; hence `||u||_2 >= q^(63/64) > 2^48`. `round9/verify_round9.py` checks the paper's extraction caps at all three Table 6 witness sizes and establishes they are below `2^31` for the parameters used in that audit.
+This also holds against the larger extraction input cap used in Theorem 1. For completeness, any integral lift `u` of `Lambda` has 63 vanishing quadratic CRT components modulo `q`. Its nonzero algebraic norm, computed as the resultant against `X^128+1`, is divisible by `q^126`. The norm is nonzero since `X^128+1` is irreducible over `Q` and `u` is nonzero in `R_q`. Parseval's identity followed by AM–GM over the 128 complex embeddings gives `|Norm(u)| <= ||u||_2^128`; hence `||u||_2 >= q^(63/64) > 2^48`. `zero-slot-certificate/verify_zero_slot_parameters.py` checks the paper's extraction caps at all three Table 6 witness sizes and establishes they are below `2^31` for the parameters used in that audit.
 
 ## 4. A malicious formal witness constructed after the public JL coins
 
@@ -119,7 +119,7 @@ Definition 11 and Theorem 1 *already contain* the term `epsilon_C` to pay for no
 
 For reference, under the paper's **heuristic** substitution `epsilon_C=64/q^2` and its assumed cardinality `|C|>=q^2`, the audited Theorem 1 parameters give `kappa_main <= 276/q^2 + kappa_proj`, with `kappa_proj = 4225*2^-128`; the Appendix A strategy gives `kappa_AppendixA <= 406/q^2 + kappa_proj`. The attack lower bound is respectively about **172.18** and **117.05** times these *nominal* bounds. These comparisons are conditional on the claimed numerical sampling assumptions and are not claims about a theorem instantiated with the actual `epsilon_C`.
 
-The original knowledge-soundness statement also permits an extractor to output a same-key SIS solution. Our input-relation impossibility is **unconditional** on the key, but exclusion of the alternative SIS-break outcome for the random rank-12 key still rests on the paper's SIS hardness assumption. The optional identity-key construction discussed in the Round 9 report removes that alternative for a different, non-benchmark key; it is not used in the Rust result described here.
+The original knowledge-soundness statement also permits an extractor to output a same-key SIS solution. Our input-relation impossibility is **unconditional** on the key, but exclusion of the alternative SIS-break outcome for the random rank-12 key still rests on the paper's SIS hardness assumption. The optional identity-key construction discussed in the Zero-slot certificate report removes that alternative for a different, non-benchmark key; it is not used in the Rust result described here.
 
 ## 7. Rust verification: what was executed
 
@@ -128,36 +128,36 @@ The provided code is a test-only adversarial prover. It derives the real project
 The user-reported runs on WSL2/x86-64 (Rust nightly, pinned Rokoko dependency) were:
 
 ```text
-Round 10, m=2^18:
+Folding-proof reproduction, m=2^18:
   PASS exact transcript-derived J0 kernel: 256 rows, 513 coefficients
   PASS: real original verify_fold accepted 40 malicious sumcheck rounds, rank=12
   test result: ok. 1 passed; 0 failed
 
-Round 11, m=2^18:
+Output-challenge check, m=2^18:
   PASS input relation has NO short opening
   FS_ZERO_SLOT_EVENT_OBSERVED=false; normal SHAKE output correctly rejected zero witness
   CONDITIONAL_GOOD_CHALLENGE_OUTPUT_ACCEPTED=true
   CONDITIONAL_BAD_CHALLENGE_OUTPUT_REJECTED=true
   PASS: original verify_fold 40 rounds, full rank 12, original verify_output challenge separation
 
-Round 12, m=2^18:
-  R12_NORMAL_FS_ZERO_SLOT=false; NORMAL_FS_ZERO_WITNESS_REJECTED=true
-  R12_GOOD_CHALLENGE_WEIGHT=23; SPECTRAL_NORM=8.117973728; LIMIT=8.357
-  R12_BAD_CHALLENGE_WEIGHT=23; SPECTRAL_NORM=8.117973728; LIMIT=8.357
-  R12_GOOD_ORIGINAL_VERIFY_FOLD_AND_OUTPUT_ACCEPTED=true
-  R12_BAD_ORIGINAL_VERIFY_FOLD_ACCEPTED_OUTPUT_REJECTED=true
-  R12_FS_STATE_RESTORED_IDENTICALLY=true
-  R12_PASS m=2^18, rounds=40, rank=12
+Conditional verifier replay, m=2^18:
+  REPLAY_NORMAL_FS_ZERO_SLOT=false; NORMAL_FS_ZERO_WITNESS_REJECTED=true
+  REPLAY_GOOD_CHALLENGE_WEIGHT=23; SPECTRAL_NORM=8.117973728; LIMIT=8.357
+  REPLAY_BAD_CHALLENGE_WEIGHT=23; SPECTRAL_NORM=8.117973728; LIMIT=8.357
+  REPLAY_GOOD_ORIGINAL_VERIFY_FOLD_AND_OUTPUT_ACCEPTED=true
+  REPLAY_BAD_ORIGINAL_VERIFY_FOLD_ACCEPTED_OUTPUT_REJECTED=true
+  REPLAY_FS_STATE_RESTORED_IDENTICALLY=true
+  REPLAY_PASS m=2^18, rounds=40, rank=12
   test result: ok. 1 passed; 0 failed
 ```
 
-The **Round 12 controlled replay** replaces **only the final folding-challenge sampling** while an explicit test-feature guard is in scope. It checks that both supplied challenges belong to the original sampler's support (weight 23, operator norm approximately 8.118), calls the unchanged `verify_fold()` checking logic with that final public coin, then passes its returned statement directly to `verify_output()`. The negative control rejects and the guard restores normal SHAKE results exactly. This is a genuine *conditional public-coin verification trace*, **not** an acceptance trace produced by the unmodified SHAKE challenge generator. The additional `derived-key` test path uses the exact identity `Commit(0)=0` to avoid generating a huge public key; it is not a general independent implementation of nonzero commitments.
+The **Conditional verifier replay controlled replay** replaces **only the final folding-challenge sampling** while an explicit test-feature guard is in scope. It checks that both supplied challenges belong to the original sampler's support (weight 23, operator norm approximately 8.118), calls the unchanged `verify_fold()` checking logic with that final public coin, then passes its returned statement directly to `verify_output()`. The negative control rejects and the guard restores normal SHAKE results exactly. This is a genuine *conditional public-coin verification trace*, **not** an acceptance trace produced by the unmodified SHAKE challenge generator. The additional `derived-key` test path uses the exact identity `Commit(0)=0` to avoid generating a huge public key; it is not a general independent implementation of nonzero commitments.
 
 The Rust execution results above are transcribed from the user's local terminal reports; this archive does not contain machine-generated Rust logs signed or captured by an independent operator. The numerical certificate is separately reproducible from the included files.
 
 ## 8. Reproduction and limitations
 
-Run `bash round9/verify_all.sh` from the attached extracted archive to reproduce the zero-slot candidate certificates, CRT algebra, finite sample kernel and probability arithmetic. The additional checker `python3 round12/verify_round12_static.py` verifies the positive and negative challenge fixtures. The archive also contains the upstream source snapshot, compatibility patches, the original Round 10 test-only prover, and incremental Round 11/12 test installers. `README_CN.md` and `INSTALL_FROM_CLEAN.sh` specify the installation order.
+Run `bash zero-slot-certificate/verify_all.sh` from the attached extracted archive to reproduce the zero-slot candidate certificates, CRT algebra, finite sample kernel and probability arithmetic. The additional checker `python3 conditional-verifier-replay/verify_challenge_fixtures.py` verifies the positive and negative challenge fixtures. The archive also contains the upstream source snapshot, compatibility patches, the original Folding-proof reproduction test-only prover, and incremental Output-challenge check/12 test installers. `README_CN.md` and `install_from_clean.sh` specify the installation order.
 
 **What has not been established:** an ordinary production build that accepts a complete, unmodified-SHAKE Fiat–Shamir forgery; an exact distributional bound for the byte-level SHAKE/AES sampler; a proof that the sampler satisfies Heuristic 1's cardinality premise; or a theorem-level contradiction with the actual `epsilon_C`. The mathematical public-coin lower bound uses a 2048-column rank solver, whereas the executed Rust fixture uses 512 extra columns. The 50-bit benchmark result says nothing automatically about the separate 64-bit Table 5 estimates.
 
@@ -165,7 +165,7 @@ Run `bash round9/verify_all.sh` from the attached extracted archive to reproduce
 
 ## 9. Short Rust regression excerpt
 
-For example, after building the `instance` and `proof` from the real transcript-derived `J0` (see `round10/adversarial_attack_tests.rs`), the Round 12 test checks the verification path as follows. The helper `audit_force_fold_challenges` is compiled **only** with the `conditional-fold-audit` test feature; it does not exist in normal verifier builds.
+For example, after building the `instance` and `proof` from the real transcript-derived `J0` (see `folding-proof-reproduction/adversarial_attack_tests.rs`), the Conditional verifier replay test checks the verification path as follows. The helper `audit_force_fold_challenges` is compiled **only** with the `conditional-fold-audit` test feature; it does not exist in normal verifier builds.
 
 ```rust
 // Baseline: no final-challenge override.
@@ -180,8 +180,8 @@ assert!(normal_result.is_err());
 // These are both in the original sampler's support: weight 23, norm < 8.357.
 let good = challenge_galois(1); // good * Lambda = 0
 let bad = challenge_galois(3);  // bad * Lambda != 0
-round12_check_accepted_fixed_weight_challenge(&good, "GOOD");
-round12_check_accepted_fixed_weight_challenge(&bad, "BAD");
+check_accepted_fixed_weight_challenge(&good, "GOOD");
+check_accepted_fixed_weight_challenge(&bad, "BAD");
 
 // The *original verify_fold* returns the favorable folded statement itself.
 let favorable = {
@@ -213,4 +213,4 @@ assert_eq!(restored.folded_claim.point, normal.folded_claim.point);
 assert_eq!(restored.folded_commitment, normal.folded_commitment);
 ```
 
-This is a readable excerpt, not a standalone Rust module. The complete definition of the fixture and the actual acceptance assertions are in `round12/round12_test_append.rs`; the count and probability certificates are in `round9/`.
+This is a readable excerpt, not a standalone Rust module. The complete definition of the fixture and the actual acceptance assertions are in `conditional-verifier-replay/conditional_replay_test_append.rs`; the count and probability certificates are in `zero-slot-certificate/`.

@@ -104,8 +104,8 @@ def main():
          'nominal_kappa_appendix_at_C_at_least_q2':str(kapp_nom),
          'attack_vs_main_ratio':float(p/kmain_nom),
          'attack_vs_appendix_ratio':float(p/kapp_nom),
-         'disclaimer':'No full 40-round Rust/FS serialization. Challenge count imported from round8 finite certificate.'}
-    dest=Path(__file__).with_name('round9_results.json');dest.write_text(json.dumps(out,indent=2,ensure_ascii=False))
+         'disclaimer':'No full 40-round Rust/FS serialization. Challenge count imported from exploratory finite certificate.'}
+    dest=Path(__file__).with_name('zero_slot_results.json');dest.write_text(json.dumps(out,indent=2,ensure_ascii=False))
     print(json.dumps({k:out[k] for k in ('projection_exact_zero_all_rows','other_zero_slots','attack_success_bits_display','attack_vs_main_ratio','attack_vs_appendix_ratio')},indent=2))
 
 if __name__=='__main__':main()

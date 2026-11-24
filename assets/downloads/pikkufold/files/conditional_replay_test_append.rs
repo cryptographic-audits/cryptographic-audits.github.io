@@ -1,11 +1,11 @@
-// ROUND12_CONDITIONAL_VERIFIER_REPLAY_BEGIN
-// Stronger than Round11's post-verification relation substitution:
+// CONDITIONAL_VERIFIER_REPLAY_BEGIN
+// Stronger than Output-challenge check's post-verification relation substitution:
 // The SAME original verify_fold() is executed with the final public-coin
 // challenges injected at its ONLY call to fold_challenges(). The same
 // original verify_output() then consumes the returned VerifierMessage.
 // This is a controlled-public-coin unit test, NOT a SHAKE preimage attack.
 #[cfg(feature = "conditional-fold-audit")]
-fn round12_check_accepted_fixed_weight_challenge(
+fn check_accepted_fixed_weight_challenge(
     z: &RingElement,
     label: &str,
 ) -> f64 {
@@ -42,14 +42,14 @@ fn round12_check_accepted_fixed_weight_challenge(
     }
     assert!(spectral_max < FOLD_CHALLENGE_OP_NORM_BOUND - 0.1,
         "{label}: candidate is too close to the sampler threshold");
-    println!("R12_{label}_CHALLENGE_WEIGHT={}; SPECTRAL_NORM={spectral_max:.9}; LIMIT={FOLD_CHALLENGE_OP_NORM_BOUND}",
+    println!("REPLAY_{label}_CHALLENGE_WEIGHT={}; SPECTRAL_NORM={spectral_max:.9}; LIMIT={FOLD_CHALLENGE_OP_NORM_BOUND}",
         terms.len());
     spectral_max
 }
 
 #[cfg(feature = "conditional-fold-audit")]
 #[test]
-fn test_round12_conditional_original_verifier_replay() {
+fn test_conditional_original_verifier_replay() {
     use crate::commitment::CommitmentKey;
     use crate::config::{folded_norm_bound, witness_norm_bound};
     use crate::fold::audit_force_fold_challenges;
@@ -138,19 +138,19 @@ fn test_round12_conditional_original_verifier_replay() {
     );
     if normal.folded_claim.value == zero {
         assert!(normal_result.is_ok(), "true FS zero-slot outcome should admit zero witness");
-        println!("R12_NORMAL_FS_ZERO_SLOT=true (rare actual hash outcome)");
+        println!("REPLAY_NORMAL_FS_ZERO_SLOT=true (rare actual hash outcome)");
     } else {
         let message = normal_result.expect_err("normal nonzero folded claim must reject zero witness");
         assert!(message.contains("evaluation"));
-        println!("R12_NORMAL_FS_ZERO_SLOT=false; NORMAL_FS_ZERO_WITNESS_REJECTED=true");
+        println!("REPLAY_NORMAL_FS_ZERO_SLOT=false; NORMAL_FS_ZERO_WITNESS_REJECTED=true");
     }
 
     // Check that BOTH supplied test challenges are actual sampler-support
     // elements: exact weight 23, coefficients +/-1, operator norm < 8.357.
     let good = challenge_galois(1);
     let bad = challenge_galois(3);
-    round12_check_accepted_fixed_weight_challenge(&good, "GOOD");
-    round12_check_accepted_fixed_weight_challenge(&bad, "BAD");
+    check_accepted_fixed_weight_challenge(&good, "GOOD");
+    check_accepted_fixed_weight_challenge(&bad, "BAD");
     assert_ne!(good, bad);
     let mut good_times_l = zero.clone();
     good_times_l *= (&good, &l);
@@ -162,7 +162,7 @@ fn test_round12_conditional_original_verifier_replay() {
     // PUBLIC-COIN CONDITIONING: install a scoped override ONLY at the FINAL
     // fold_challenges call inside ORIGINAL verify_fold. The original checks,
     // proof, projection, sumcheck messages and terminal point are untouched.
-    // Unlike Round11, the returned VerifierMessage is not constructed by hand.
+    // Unlike Output-challenge check, the returned VerifierMessage is not constructed by hand.
     let conditioned_good = {
         let _guard = audit_force_fold_challenges(vec![good.clone(), bad.clone(), one.clone()]);
         verify_fold(m, &instance, &proof)
@@ -177,7 +177,7 @@ fn test_round12_conditional_original_verifier_replay() {
         &conditioned_good.folded_commitment,
         &conditioned_good.folded_claim, cap,
     ).expect("zero opening must pass original verify_output with good final public coin");
-    println!("R12_GOOD_ORIGINAL_VERIFY_FOLD_AND_OUTPUT_ACCEPTED=true");
+    println!("REPLAY_GOOD_ORIGINAL_VERIFY_FOLD_AND_OUTPUT_ACCEPTED=true");
 
     let conditioned_bad = {
         let _guard = audit_force_fold_challenges(vec![bad.clone(), good.clone(), one.clone()]);
@@ -194,7 +194,7 @@ fn test_round12_conditional_original_verifier_replay() {
         &conditioned_bad.folded_claim, cap,
     ).expect_err("bad public coin must reject a zero output witness");
     assert!(error.contains("evaluation"));
-    println!("R12_BAD_ORIGINAL_VERIFY_FOLD_ACCEPTED_OUTPUT_REJECTED=true");
+    println!("REPLAY_BAD_ORIGINAL_VERIFY_FOLD_ACCEPTED_OUTPUT_REJECTED=true");
 
     // Guard must be reversible. Re-run normal SHAKE and compare exact outputs,
     // proving conditional injection did not persist across tests.
@@ -203,8 +203,8 @@ fn test_round12_conditional_original_verifier_replay() {
     assert_eq!(normal_again.folded_claim.point, normal.folded_claim.point);
     assert_eq!(normal_again.folded_claim.value, normal.folded_claim.value);
     assert_eq!(normal_again.folded_commitment, normal.folded_commitment);
-    println!("R12_FS_STATE_RESTORED_IDENTICALLY=true");
-    println!("R12_PASS m=2^{log_m}, rounds={expected_rounds}, rank={rank}");
-    println!("R12_SCOPE: conditional public-coin verification; NOT a SHAKE forgery");
+    println!("REPLAY_FS_STATE_RESTORED_IDENTICALLY=true");
+    println!("REPLAY_PASS m=2^{log_m}, rounds={expected_rounds}, rank={rank}");
+    println!("REPLAY_SCOPE: conditional public-coin verification; NOT a SHAKE forgery");
 }
-// ROUND12_CONDITIONAL_VERIFIER_REPLAY_END
+// CONDITIONAL_VERIFIER_REPLAY_END

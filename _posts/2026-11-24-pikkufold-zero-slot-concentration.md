@@ -204,24 +204,24 @@ The supplied adversarial prover derives the projection matrices and sumcheck cha
 The author-reported Ubuntu/WSL2 runs produced the following key results:
 
 ```text
-Round 10, m=2^18:
+Folding-proof reproduction, m=2^18:
   PASS exact transcript-derived J0 kernel: 256 rows, 513 coefficients
   PASS original verify_fold accepted 40 malicious sumcheck rounds, rank=12
 
-Round 11, m=2^18:
+Output-challenge check, m=2^18:
   PASS input relation has NO short opening
   normal SHAKE output rejected the zero witness
   supported zero-slot challenge accepted the zero witness
   supported non-zero-slot challenge rejected the zero witness
 
-Round 12, m=2^18:
+Conditional verifier replay, m=2^18:
   favorable challenge norm: 8.117973728 < 8.357
   original verify_fold and verify_output accepted the favorable branch
   the unfavorable branch failed at verify_output
   SHAKE state was restored identically after the guarded test
 ```
 
-Round 12 places a thread-local, test-feature guard exactly at final challenge sampling. Both injected challenges belong to the original sampler's support. This reproduces the two public-coin branches through the verifier, while the normal SHAKE control remains untouched outside the guard. Accordingly, the experiment demonstrates the conditional verification path and the concrete probability discrepancy; it is not a SHAKE preimage result.
+The conditional verifier replay places a thread-local, test-feature guard exactly at final challenge sampling. Both injected challenges belong to the original sampler's support. This reproduces the two public-coin branches through the verifier, while the normal SHAKE control remains untouched outside the guard. Accordingly, the experiment demonstrates the conditional verification path and the concrete probability discrepancy; it is not a SHAKE preimage result.
 
 ## 7. Reproduction Downloads
 
@@ -229,31 +229,31 @@ All source-code comments in the published modules are in English. The complete a
 
 ### Individual files
 
-- [Main proof note](/assets/downloads/pikkufold/files/GIST_PROOF.md)
-- [Exact ring and parameter verifier](/assets/downloads/pikkufold/files/verify_round9.py)
+- [Main proof note](/assets/downloads/pikkufold/files/PIKKUFOLD_ZERO_SLOT_NOTE.md)
+- [Exact ring and parameter verifier](/assets/downloads/pikkufold/files/verify_zero_slot_parameters.py)
 - [Zero-slot orbit counter](/assets/downloads/pikkufold/files/verify_many_orbits.py)
-- [Round 12 static challenge verifier](/assets/downloads/pikkufold/files/verify_round12_static.py)
-- [Round 12 Rust verifier-path fixture](/assets/downloads/pikkufold/files/round12_test_append.rs)
-- [Clean installation script](/assets/downloads/pikkufold/files/INSTALL_FROM_CLEAN.sh)
-- [Recorded Ubuntu/WSL2 results](/assets/downloads/pikkufold/files/OBSERVED_WSL_RESULTS.md)
+- [Static challenge verifier](/assets/downloads/pikkufold/files/verify_challenge_fixtures.py)
+- [Conditional verifier-path fixture](/assets/downloads/pikkufold/files/conditional_replay_test_append.rs)
+- [Clean installation script](/assets/downloads/pikkufold/files/install_from_clean.sh)
+- [Recorded Ubuntu/WSL2 results](/assets/downloads/pikkufold/files/UBUNTU_WSL_RESULTS.md)
 
 ### Module downloads
 
-- [Counting certificate module](/assets/downloads/pikkufold/pikkufold-counting-certificate.zip) — CRT checks, candidate certificate, orbit counting, and reference results.
-- [Verifier replay module](/assets/downloads/pikkufold/pikkufold-verifier-replay.zip) — portable helpers plus the Round 10–12 adversarial prover and verifier-path tests.
+- [Zero-slot certificate module](/assets/downloads/pikkufold/pikkufold-zero-slot-certificate.zip) — CRT checks, candidate certificate, orbit counting, and reference results.
+- [Verifier reproduction module](/assets/downloads/pikkufold/pikkufold-verifier-reproduction.zip) — portable helpers, folding-proof reproduction, output-challenge checks, and conditional verifier-path tests.
 
 ### Complete package
 
-- [Download the complete PikkuFold proof and code bundle](/assets/downloads/pikkufold/pikkufold-full-proof-and-code.zip)
+- [Download the complete PikkuFold proof and code bundle](/assets/downloads/pikkufold/pikkufold-proof-and-code.zip)
 
 The quickest certificate-only reproduction is:
 
 ```bash
-bash round9/verify_all.sh
-python3 round12/verify_round12_static.py
+bash zero-slot-certificate/verify_all.sh
+python3 conditional-verifier-replay/verify_challenge_fixtures.py
 ```
 
-For the full Rust path, follow `INSTALL_FROM_CLEAN.sh` in the complete package and run the guarded tests under the feature names documented by the Round 10–12 modules.
+For the full Rust path, follow `install_from_clean.sh` in the complete package and run the guarded tests documented by the folding-proof, output-challenge, and conditional-replay modules.
 
 ---
 
