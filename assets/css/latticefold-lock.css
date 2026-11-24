@@ -165,9 +165,52 @@
   gap: 0.7rem;
 }
 
+.lf-file-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.lf-file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid var(--lf-border);
+  border-radius: 0.8rem;
+  padding: 1rem;
+  background: var(--main-bg);
+}
+
+.lf-file-card__type {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  border-radius: 999px;
+  padding: 0.22rem 0.58rem;
+  color: var(--lf-accent);
+  background: color-mix(in srgb, var(--card-bg) 78%, var(--lf-accent) 22%);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.lf-file-card h5 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.lf-file-card p {
+  flex: 1;
+  margin: 0 0 0.85rem;
+  color: var(--text-muted-color);
+  font-size: 0.9rem;
+}
+
 @media (max-width: 720px) {
   .lf-lock__form,
-  .lf-code-pair {
+  .lf-code-pair,
+  .lf-file-grid {
     grid-template-columns: 1fr;
   }
 

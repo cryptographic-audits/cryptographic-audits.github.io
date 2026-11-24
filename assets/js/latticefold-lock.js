@@ -67,7 +67,9 @@
 
         try {
           const plaintext = await decryptUrl(button.dataset.encryptedDownload, password);
-          const blob = new Blob([plaintext], { type: "application/zip" });
+          const blob = new Blob([plaintext], {
+            type: button.dataset.mimeType || "application/octet-stream",
+          });
           const href = URL.createObjectURL(blob);
           const anchor = document.createElement("a");
           anchor.href = href;
