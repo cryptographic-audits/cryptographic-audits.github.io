@@ -187,6 +187,9 @@ document.querySelectorAll("[data-latticefold-lock]").forEach((root) => {
       output.innerHTML = decoder.decode(unlocked.plaintext);
       sodium.memzero(unlocked.plaintext);
       attachDownloads(output, activeSession);
+      if (window.MathJax?.typesetPromise) {
+        window.MathJax.typesetPromise([output]).catch(() => {});
+      }
       form.hidden = true;
       setStatus(status, "Unlocked for this browser tab.", "success");
       root.classList.add("is-unlocked");

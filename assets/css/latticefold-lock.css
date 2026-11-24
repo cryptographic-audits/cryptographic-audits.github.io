@@ -89,6 +89,87 @@
 .lf-lock__output:empty { display: none; }
 .lf-lock.is-unlocked { background: var(--card-bg); }
 
+.lf-article-lead {
+  margin: 0.25rem 0 1.5rem;
+  border-left: 0.3rem solid var(--lf-accent);
+  padding: 0.35rem 0 0.35rem 1rem;
+}
+
+.lf-article-lead h3 {
+  margin: 0.15rem 0 0.55rem;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+}
+
+.lf-article-lead p:last-child { margin-bottom: 0; }
+
+.lf-kicker {
+  margin: 0;
+  color: var(--lf-accent);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lf-proof {
+  margin: 1.2rem 0;
+  border: 1px solid var(--lf-border);
+  border-radius: 0.9rem;
+  padding: clamp(1rem, 3vw, 1.35rem);
+  background: var(--main-bg);
+}
+
+.lf-proof__label {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.58rem;
+  color: #fff;
+  background: var(--lf-accent);
+  font-size: 0.76rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lf-proof h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1.18rem;
+}
+
+.lf-proof p {
+  margin: 0.72rem 0;
+  line-height: 1.72;
+}
+
+.lf-proof__body {
+  margin-top: 1rem;
+  border-top: 1px solid var(--lf-border);
+  padding-top: 0.35rem;
+}
+
+.lf-proof--compact { background: color-mix(in srgb, var(--card-bg) 94%, var(--lf-accent) 6%); }
+
+.lf-equation {
+  margin: 0.9rem 0;
+  overflow-x: auto;
+  padding: 0.25rem 0;
+  text-align: center;
+}
+
+.lf-qed {
+  float: right;
+  font-size: 1.05rem;
+}
+
+.lf-scope {
+  margin: 1.15rem 0 1.7rem;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: color-mix(in srgb, var(--card-bg) 86%, var(--lf-accent) 14%);
+  line-height: 1.65;
+}
+
 .lf-flow {
   display: grid;
   grid-template-columns: repeat(5, minmax(9.5rem, 1fr));
