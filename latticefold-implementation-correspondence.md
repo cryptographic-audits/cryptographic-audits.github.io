@@ -13,7 +13,7 @@ math: true
 
 [Open LatticeFold on IACR ePrint](https://eprint.iacr.org/2024/257) · [Open the Nethermind implementation](https://github.com/NethermindEth/latticefold)
 
-The working materials are encrypted in the browser. The password is never embedded in this repository, transmitted to the site, or stored after the page is reloaded. Decryption uses PBKDF2-SHA-256 and AES-256-GCM through the browser's Web Crypto API.
+The working materials are encrypted in the browser. The password is never embedded in this repository, transmitted to the site, or stored after the page is reloaded. Decryption uses Argon2id with a 128 MiB memory cost and XChaCha20-Poly1305 authenticated encryption through the bundled libsodium.js runtime.
 
 ## Protected implementation correspondence
 
@@ -39,7 +39,7 @@ The working materials are encrypted in the browser. The password is never embedd
   <div class="lf-lock__output" data-lock-output></div>
 </section>
 
-<script src="/assets/js/latticefold-lock.js" defer></script>
+<script type="module" src="/assets/js/latticefold-lock.js"></script>
 
 ---
 
