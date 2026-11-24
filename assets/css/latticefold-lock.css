@@ -1,0 +1,175 @@
+.lf-lock {
+  --lf-accent: #4338ca;
+  --lf-border: color-mix(in srgb, var(--text-color) 18%, transparent);
+  margin: 1.5rem 0;
+  border: 1px solid var(--lf-border);
+  border-radius: 1rem;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  background: color-mix(in srgb, var(--card-bg) 94%, var(--lf-accent) 6%);
+}
+
+.lf-lock__header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.lf-lock__icon {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  flex: 0 0 auto;
+  border-radius: 0.8rem;
+  color: #fff;
+  background: var(--lf-accent);
+  font-size: 1.25rem;
+}
+
+.lf-lock__header h3,
+.lf-lock__header p {
+  margin: 0;
+}
+
+.lf-lock__header p {
+  margin-top: 0.2rem;
+  color: var(--text-muted-color);
+  font-size: 0.94rem;
+}
+
+.lf-lock__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+}
+
+.lf-lock__form input,
+.lf-lock__form button,
+.lf-download {
+  min-height: 2.8rem;
+  border-radius: 0.65rem;
+  font: inherit;
+}
+
+.lf-lock__form input {
+  min-width: 0;
+  border: 1px solid var(--lf-border);
+  padding: 0.65rem 0.8rem;
+  color: var(--text-color);
+  background: var(--main-bg);
+}
+
+.lf-lock__form button,
+.lf-download {
+  border: 0;
+  padding: 0.65rem 1rem;
+  color: #fff;
+  background: var(--lf-accent);
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.lf-lock__form button:disabled,
+.lf-download:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.lf-lock__status {
+  min-height: 1.5rem;
+  margin: 0.7rem 0 0;
+  color: var(--text-muted-color);
+  font-size: 0.92rem;
+}
+
+.lf-lock__status[data-state="error"] { color: #dc2626; }
+.lf-lock__status[data-state="success"] { color: #15803d; }
+
+.lf-lock__output:empty { display: none; }
+.lf-lock.is-unlocked { background: var(--card-bg); }
+
+.lf-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(9.5rem, 1fr));
+  gap: 0.65rem;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+}
+
+.lf-flow__step {
+  position: relative;
+  min-width: 9.5rem;
+  border: 1px solid var(--lf-border);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: var(--main-bg);
+}
+
+.lf-flow__step strong,
+.lf-flow__step code {
+  display: block;
+}
+
+.lf-flow__step strong { margin-bottom: 0.35rem; }
+.lf-flow__step p { margin: 0; font-size: 0.9rem; }
+
+.lf-flow__step:not(:last-child)::after {
+  content: "›";
+  position: absolute;
+  right: -0.48rem;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: var(--lf-accent);
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.lf-map-table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.lf-map-table th,
+.lf-map-table td {
+  border: 1px solid var(--lf-border);
+  padding: 0.7rem;
+  vertical-align: top;
+}
+
+.lf-map-table th { background: color-mix(in srgb, var(--card-bg) 85%, var(--lf-accent) 15%); }
+
+.lf-code-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+
+.lf-code-pair > div {
+  border: 1px solid var(--lf-border);
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  background: var(--main-bg);
+}
+
+.lf-code-pair h4 { margin-top: 0; }
+
+.lf-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+@media (max-width: 720px) {
+  .lf-lock__form,
+  .lf-code-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .lf-lock__form button { width: 100%; }
+}
