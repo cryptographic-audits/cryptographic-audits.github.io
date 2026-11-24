@@ -1,7 +1,7 @@
 ---
 title: "Technical Audit of Real-Value Hashing and Commitments with Dynamic Precision"
 description: "A same-salt opening counterexample, parameter-regime analysis, and reproducible implementation checks for ePrint 2026/2962."
-date: 2026-11-24 10:00:00 +0800
+date: 2026-11-24 08:00:00 +0800
 categories: [Audits, Commitments]
 tags: [real-values, commitments, csis, clwe, dynamic-precision, counterexamples]
 math: true

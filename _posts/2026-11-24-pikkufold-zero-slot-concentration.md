@@ -1,7 +1,7 @@
 ---
 title: "A Zero-Slot Concentration in PikkuFold's 50-Bit Challenge Sampler"
 description: "A certified challenge concentration, a no-short-witness instance, and a verifier-path reproduction for PikkuFold."
-date: 2026-11-24 11:00:00 +0800
+date: 2026-11-24 08:05:00 +0800
 categories: [Audits, Folding Schemes]
 tags: [pikkufold, lattice, folding, challenge-sampling, sumcheck, zero-divisors]
 math: true
