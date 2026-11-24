@@ -3,6 +3,8 @@ title: "From Specifications to Implementations: A Soundness Analysis of LatticeF
 description: "A protected technical report connecting formal soundness counterexamples to reproducible implementation paths."
 layout: page
 permalink: /protected/latticefold-implementation-correspondence/
+icon: fas fa-file-shield
+order: 1
 sitemap: false
 robots: noindex, nofollow
 math: true
