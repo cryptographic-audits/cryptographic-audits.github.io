@@ -10,6 +10,8 @@ Source for [cryptographic-audits.github.io](https://cryptographic-audits.github.
 
 - Mathematical Errors and Counterexamples in ProtoStar (ePrint 2023/620)
 - Technical Concerns on FLIP-and-Prove R1CS (ePrint 2024/1364)
+- Technical Audit of Real-Value Hashing and Commitments with Dynamic Precision (ePrint 2026/2962)
+- A Zero-Slot Concentration in PikkuFold's 50-Bit Challenge Sampler (ePrint 2026/1809)
 
 The site uses the [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) Jekyll theme and is deployed through GitHub Pages.
 
