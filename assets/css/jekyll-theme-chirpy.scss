@@ -39,15 +39,6 @@
   background: #fff;
 }
 
-#sidebar .nav-link[href$='/protected/latticefold-implementation-correspondence/'] span {
-  font-size: 0;
-}
-
-#sidebar .nav-link[href$='/protected/latticefold-implementation-correspondence/'] span::after {
-  content: 'LATTICEFOLD REPORT';
-  font-size: 0.9rem;
-}
-
 #sidebar .site-traffic {
   width: calc(100% - 2rem);
   margin: 0 1rem 1.1rem;

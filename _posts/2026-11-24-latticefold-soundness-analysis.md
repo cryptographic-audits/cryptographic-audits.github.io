@@ -1,10 +1,11 @@
 ---
 title: "From Specifications to Implementations: A Soundness Analysis of LatticeFold and LatticeFold+"
 description: "A protected technical report connecting formal soundness counterexamples to reproducible implementation paths."
-layout: page
+date: 2026-11-24 20:10:00 +0800
+categories: [Audits, Folding Schemes]
+tags: [latticefold, latticefold-plus, folding, lattice, knowledge-soundness, counterexamples]
+layout: post
 permalink: /protected/latticefold-implementation-correspondence/
-icon: fas fa-file-shield
-order: 1
 sitemap: false
 robots: noindex, nofollow
 math: true
