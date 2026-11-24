@@ -1,0 +1,8 @@
+{% assign goatcounter_id = site.analytics.goatcounter.id %}
+{% if goatcounter_id and goatcounter_id != empty %}
+  <script
+    defer
+    src="{{ '/assets/js/site-traffic.js' | relative_url }}"
+    data-goatcounter-account="{{ goatcounter_id | escape }}"
+  ></script>
+{% endif %}
